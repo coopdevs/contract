@@ -35,6 +35,7 @@ class AccountAnalyticContractLine(models.Model):
     )
     quantity = fields.Float(
         default=1.0,
+        digits=dp.get_precision('Quantity'),
         required=True,
     )
     uom_id = fields.Many2one(
