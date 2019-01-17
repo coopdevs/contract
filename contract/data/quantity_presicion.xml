@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+        <!--
+             Precisions
+        -->
+        <record forcecreate="True" id="decimal_quantity" model="decimal.precision">
+            <field name="name">Quantity</field>
+            <field name="digits">4</field>
+        </record>
+  </data>
+</odoo>
+
