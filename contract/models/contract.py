@@ -21,6 +21,7 @@ class ContractContract(models.Model):
     _name = "contract.contract"
     _description = "Contract"
     _order = "code, name asc"
+    _check_company_auto = True
     _inherit = [
         "mail.thread",
         "mail.activity.mixin",
@@ -39,6 +40,8 @@ class ContractContract(models.Model):
         string="Group",
         comodel_name="account.analytic.account",
         ondelete="restrict",
+        check_company=True,
+        domain="[('company_id', '=', company_id)]",
     )
     currency_id = fields.Many2one(
         compute="_compute_currency_id",
@@ -81,18 +84,25 @@ class ContractContract(models.Model):
     )
     date_end = fields.Date(compute="_compute_date_end", store=True, readonly=False)
     payment_term_id = fields.Many2one(
-        comodel_name="account.payment.term", string="Payment Terms", index=True
+        comodel_name="account.payment.term",
+        string="Payment Terms",
+        index=True,
+        check_company=True,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
     )
     invoice_count = fields.Integer(compute="_compute_invoice_count")
     fiscal_position_id = fields.Many2one(
         comodel_name="account.fiscal.position",
         string="Fiscal Position",
         ondelete="restrict",
+        check_company=True,
+        domain="[('company_id', '=', company_id)]",
     )
     invoice_partner_id = fields.Many2one(
         string="Invoicing contact",
         comodel_name="res.partner",
         ondelete="restrict",
+        domain="['|', ('id', 'parent_of', partner_id), ('id', 'child_of', partner_id)]",
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner", inverse="_inverse_partner_id", required=True
@@ -281,12 +291,20 @@ class ContractContract(models.Model):
         self.ensure_one()
         tree_view = self.env.ref("account.view_invoice_tree", raise_if_not_found=False)
         form_view = self.env.ref("account.view_move_form", raise_if_not_found=False)
+        ctx = dict(self.env.context)
+        if ctx.get("default_contract_type"):
+            ctx["default_move_type"] = (
+                "out_invoice"
+                if ctx.get("default_contract_type") == "sale"
+                else "in_invoice"
+            )
         action = {
             "type": "ir.actions.act_window",
             "name": "Invoices",
             "res_model": "account.move",
             "view_mode": "tree,kanban,form,calendar,pivot,graph,activity",
             "domain": [("id", "in", self._get_related_invoices().ids)],
+            "context": ctx,
         }
         if tree_view and form_view:
             action["views"] = [(tree_view.id, "tree"), (form_view.id, "form")]
@@ -305,6 +323,8 @@ class ContractContract(models.Model):
         "contract_line_ids.is_canceled",
     )
     def _compute_recurring_next_date(self):
+        # Compute the recurring_next_date on the contract based on the one
+        # defined on line level.
         for contract in self:
             recurring_next_date = contract.contract_line_ids.filtered(
                 lambda l: (
@@ -313,15 +333,11 @@ class ContractContract(models.Model):
                     and (not l.display_type or l.is_recurring_note)
                 )
             ).mapped("recurring_next_date")
-            # we give priority to computation from date_start if modified
-            if (
-                contract._origin
-                and contract._origin.date_start != contract.date_start
-                or not recurring_next_date
-            ):
-                super(ContractContract, contract)._compute_recurring_next_date()
-            else:
-                contract.recurring_next_date = min(recurring_next_date)
+            # Take the earliest or set it as False if contract is stopped
+            # (no recurring_next_date).
+            contract.recurring_next_date = (
+                min(recurring_next_date) if recurring_next_date else False
+            )
 
     @api.depends("contract_line_ids.create_invoice_visibility")
     def _compute_create_invoice_visibility(self):
@@ -375,15 +391,6 @@ class ContractContract(models.Model):
         else:
             self.payment_term_id = partner.property_payment_term_id
         self.invoice_partner_id = self.partner_id.address_get(["invoice"])["invoice"]
-        return {
-            "domain": {
-                "invoice_partner_id": [
-                    "|",
-                    ("id", "parent_of", self.partner_id.id),
-                    ("id", "child_of", self.partner_id.id),
-                ]
-            }
-        }
 
     def _convert_contract_lines(self, contract):
         self.ensure_one()
@@ -429,23 +436,25 @@ class ContractContract(models.Model):
         move_form = Form(
             self.env["account.move"]
             .with_company(self.company_id)
-            .with_context(default_move_type=invoice_type)
+            .with_context(default_move_type=invoice_type, default_name="/"),
+            view="contract.view_account_move_contract_helper_form",
         )
         move_form.partner_id = self.invoice_partner_id
+        move_form.journal_id = journal
+        move_form.currency_id = self.currency_id
+        move_form.invoice_date = date_invoice
         if self.payment_term_id:
             move_form.invoice_payment_term_id = self.payment_term_id
         if self.fiscal_position_id:
             move_form.fiscal_position_id = self.fiscal_position_id
+        if invoice_type == "out_invoice" and self.user_id:
+            move_form.invoice_user_id = self.user_id
         invoice_vals = move_form._values_to_save(all_fields=True)
         invoice_vals.update(
             {
                 "ref": self.code,
-                "company_id": self.company_id.id,
-                "currency_id": self.currency_id.id,
-                "invoice_date": date_invoice,
-                "journal_id": journal.id,
+                "date": date_invoice,
                 "invoice_origin": self.name,
-                "invoice_user_id": self.user_id.id,
             }
         )
         return invoice_vals, move_form
@@ -565,8 +574,8 @@ class ContractContract(models.Model):
         This method triggers the creation of the next invoices of the contracts
         even if their next invoicing date is in the future.
         """
-        invoice = self._recurring_create_invoice()
-        if invoice:
+        invoices = self._recurring_create_invoice()
+        for invoice in invoices:
             self.message_post(
                 body=_(
                     "Contract manually invoiced: "
@@ -575,7 +584,7 @@ class ContractContract(models.Model):
                 )
                 % (invoice._name, invoice.id)
             )
-        return invoice
+        return invoices
 
     @api.model
     def _invoice_followers(self, invoices):
@@ -591,9 +600,25 @@ class ContractContract(models.Model):
                     partner_ids=partner_ids.ids
                 )
 
+    @api.model
+    def _add_contract_origin(self, invoices):
+        for item in self:
+            for move in invoices & item._get_related_invoices():
+                move.message_post(
+                    body=(
+                        _("%s by contract %s.")
+                        % (
+                            move._creation_message(),
+                            "<a href=# data-oe-model=contract.contract data-oe-id=%d>%s</a>"
+                            % (item.id, item.display_name),
+                        )
+                    )
+                )
+
     def _recurring_create_invoice(self, date_ref=False):
         invoices_values = self._prepare_recurring_invoices_values(date_ref)
         moves = self.env["account.move"].create(invoices_values)
+        self._add_contract_origin(moves)
         self._invoice_followers(moves)
         self._compute_recurring_next_date()
         return moves

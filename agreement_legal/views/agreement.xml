@@ -5,7 +5,7 @@
         <field name="name">Agreement List</field>
         <field name="model">agreement</field>
         <field name="arch" type="xml">
-            <tree string="Agreements" default_order="code desc, name">
+            <tree>
                 <field name="code" />
                 <field name="name" />
                 <field name="partner_id" />
@@ -225,6 +225,10 @@
                             <field
                                 name="end_date"
                                 attrs="{'required': [('is_template', '=', False)], 'invisible': [('is_template', '=', True)]}"
+                            />
+                            <field
+                                name="to_review_date"
+                                attrs="{'required': [('is_template', '=', False), ('end_date', '!=', False)], 'invisible': [('is_template', '=', True)]}"
                             />
                             <field name="expiration_notice" />
                             <field name="change_notice" />
@@ -522,6 +526,11 @@
                     name="filter_templates"
                     string="Templates"
                     domain="[('active','=',True),('is_template', '=', True)]"
+                />
+                <filter
+                    name="filter_to_review"
+                    string="Agreements to review"
+                    domain="[('to_review_date', '&lt;=', context_today().strftime('%Y-%m-%d')), ('end_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
                 />
                 <filter
                     name="group_partner_id"

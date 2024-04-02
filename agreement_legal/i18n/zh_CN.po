@@ -141,6 +141,18 @@ msgid "Agreement Types"
 msgstr "协议类型"
 
 #. module: agreement_legal
+#: model:mail.activity.type,name:agreement_legal.mail_activity_review_agreement
+msgid "Agreement needs a review"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.server,name:agreement_legal.ir_cron_test_acc_move_except_ir_actions_server
+#: model:ir.cron,cron_name:agreement_legal.ir_cron_test_acc_move_except
+#: model:ir.cron,name:agreement_legal.ir_cron_test_acc_move_except
+msgid "Agreement: Check to Review Days"
+msgstr ""
+
+#. module: agreement_legal
 #: model:ir.actions.act_window,name:agreement_legal.action_agreement_report_order
 #: model:ir.actions.act_window,name:agreement_legal.agreement_dashboard_agreement
 #: model:ir.actions.act_window,name:agreement_legal.agreement_operations_agreement
@@ -151,7 +163,6 @@ msgstr "协议类型"
 #: model:ir.ui.menu,name:agreement_legal.operations_agreements
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_graph_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_pivot_view
-#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_list_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_search_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_form
 #: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
@@ -180,6 +191,11 @@ msgid "Agreements Sub-Types Search"
 msgstr ""
 
 #. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Agreements to review"
+msgstr ""
+
+#. module: agreement_legal
 #: model:ir.model.fields,help:agreement_legal.field_agreement__special_terms
 msgid ""
 "Any terms that you have agreed to and want to track on the agreement/"
@@ -190,7 +206,6 @@ msgstr "您同意并希望跟踪协议合同的任何条款。"
 #: model:ir.actions.act_window,name:agreement_legal.agreement_appendix_action
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__appendix_ids
 #: model:ir.ui.menu,name:agreement_legal.agreement_appendices
-#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_tree
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
 msgid "Appendices"
 msgstr "附录"
@@ -271,7 +286,6 @@ msgstr "条款内容"
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__clauses_ids
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__clauses_ids
 #: model:ir.ui.menu,name:agreement_legal.agreement_clauses
-#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_list_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
 msgid "Clauses"
@@ -452,6 +466,11 @@ msgstr "公司签署合同的日期。"
 #: model:ir.model.fields,help:agreement_legal.field_agreement__partner_signed_date
 msgid "Date the contract was signed by the Partner."
 msgstr "合作伙伴签署合同的日期。"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__to_review_date
+msgid "Date used to warn us some days before agreement expires"
+msgstr ""
 
 #. module: agreement_legal
 #: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
@@ -1024,7 +1043,6 @@ msgstr "叙述"
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__recital_ids
 #: model:ir.ui.menu,name:agreement_legal.agreement_recitals
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_search
-#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_tree
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
 msgid "Recitals"
@@ -1059,6 +1077,16 @@ msgstr "代表人"
 #: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
 msgid "Returns"
 msgstr "退货"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_type__review_days
+msgid "Review Days"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_type__review_user_id
+msgid "Review User"
+msgstr ""
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__reviewed_user_id
@@ -1111,7 +1139,6 @@ msgstr "章节内容"
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__sections_ids
 #: model:ir.ui.menu,name:agreement_legal.agreement_sections
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
-#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_list_view
 msgid "Sections"
 msgstr "章节"
 
@@ -1451,6 +1478,11 @@ msgid "Title:"
 msgstr "标题："
 
 #. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__to_review_date
+msgid "To Review Date"
+msgstr ""
+
+#. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__stage_type
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_search_view
 msgid "Type"
@@ -1490,6 +1522,11 @@ msgstr "使用缔约方内容"
 #: model:res.groups,name:agreement_legal.group_agreement_user
 msgid "User"
 msgstr "用户"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_type__review_user_id
+msgid "User assigned automatically the activity on review date"
+msgstr ""
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__version
@@ -1536,12 +1573,23 @@ msgid "When the agreement starts."
 msgstr "协议开始时。"
 
 #. module: agreement_legal
+#: code:addons/agreement_legal/models/agreement.py:0
+#, python-format
+msgid "Your activity is going to end soon"
+msgstr ""
+
+#. module: agreement_legal
 #: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__dynamic_content
 #: model:ir.model.fields,help:agreement_legal.field_agreement_clause__dynamic_content
 #: model:ir.model.fields,help:agreement_legal.field_agreement_recital__dynamic_content
 #: model:ir.model.fields,help:agreement_legal.field_agreement_section__dynamic_content
 msgid "compute dynamic Content"
 msgstr "计算动态内容"
+
+#. module: agreement_legal
+#: model:mail.activity.type,summary:agreement_legal.mail_activity_review_agreement
+msgid "note"
+msgstr ""
 
 #. module: agreement_legal
 #: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban

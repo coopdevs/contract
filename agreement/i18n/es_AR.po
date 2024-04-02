@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2021-07-09 21:48+0000\n"
+"PO-Revision-Date: 2022-02-06 20:59+0000\n"
 "Last-Translator: Ignacio Buioli <ibuioli@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es_AR\n"
@@ -75,7 +75,6 @@ msgstr "Tipo de Acuerdo"
 #: model:ir.actions.act_window,name:agreement.agreement_type_action
 #: model:ir.model,name:agreement.model_agreement_type
 #: model:ir.ui.menu,name:agreement.agreement_type_menu
-#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_list_view
 msgid "Agreement Types"
 msgstr "Tipos de Acuerdo"
 
@@ -83,7 +82,6 @@ msgstr "Tipos de Acuerdo"
 #: model:ir.actions.act_window,name:agreement.agreement_action
 #: model:ir.ui.menu,name:agreement.agreement_menu
 #: model:ir.ui.menu,name:agreement.agreement_menu_root
-#: model_terms:ir.ui.view,arch_db:agreement.agreement_tree
 msgid "Agreements"
 msgstr "Acuerdos"
 
@@ -154,7 +152,7 @@ msgstr "Seguidores (Canales)"
 #. module: agreement
 #: model:ir.model.fields,field_description:agreement.field_agreement__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Seguidores (Socios)"
+msgstr "Seguidores (Contactos)"
 
 #. module: agreement
 #: model:ir.model.fields,help:agreement.field_agreement__activity_type_icon
@@ -190,7 +188,6 @@ msgstr "Si está marcada, los nuevos mensajes requieren su atención."
 
 #. module: agreement
 #: model:ir.model.fields,help:agreement.field_agreement__message_has_error
-#: model:ir.model.fields,help:agreement.field_agreement__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Si está marcado, algunos mensajes tienen un error de entrega."
 
@@ -302,7 +299,7 @@ msgstr "Número de mensajes sin leer"
 #: model:ir.model.fields,field_description:agreement.field_agreement__partner_id
 #: model_terms:ir.ui.view,arch_db:agreement.agreement_search
 msgid "Partner"
-msgstr "Socio"
+msgstr "Contacto"
 
 #. module: agreement
 #: code:addons/agreement/models/agreement.py:0
@@ -321,11 +318,6 @@ msgstr "Referencia"
 #: model:ir.model.fields,field_description:agreement.field_agreement__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario Responsable"
-
-#. module: agreement
-#: model:ir.model.fields,field_description:agreement.field_agreement__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "Error de Entrega de SMS"
 
 #. module: agreement
 #: code:addons/agreement/models/agreement.py:0
@@ -442,6 +434,9 @@ msgstr "Cuando el acuerdo finaliza."
 #: model:ir.model.fields,help:agreement.field_agreement__start_date
 msgid "When the agreement starts."
 msgstr "Cuando el acuerdo inicia."
+
+#~ msgid "SMS Delivery error"
+#~ msgstr "Error de Entrega de SMS"
 
 #~ msgid "Code"
 #~ msgstr "Código"

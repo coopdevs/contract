@@ -140,7 +140,11 @@
                                 required="1"
                                 attrs="{'readonly': [('is_terminated','=',True)]}"
                             />
-                            <field name="tag_ids" widget="many2many_tags" />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
                         </group>
                     </group>
                     <group name="recurring_invoices">
@@ -217,7 +221,8 @@
                                         groups="analytic.group_analytic_tags"
                                     />
                                     <field name="quantity" />
-                                    <field name="uom_id" />
+                                    <field name="allowed_uom_categ_id" invisible="1" />
+                                    <field name="uom_id" groups="uom.group_uom" />
                                     <field
                                         name="automatic_price"
                                         attrs="{'column_invisible': [('parent.contract_type', '=', 'purchase')]}"
@@ -227,7 +232,11 @@
                                         attrs="{'readonly': [('automatic_price', '=', True)]}"
                                     />
                                     <field name="specific_price" invisible="1" />
-                                    <field name="discount" groups="base.group_no_one" />
+                                    <field
+                                        name="discount"
+                                        groups="product.group_discount_per_so_line"
+                                        optional="show"
+                                    />
                                     <field name="price_subtotal" />
                                     <field name="recurring_interval" invisible="1" />
                                     <field name="recurring_rule_type" invisible="1" />
@@ -238,10 +247,7 @@
                                     <field name="recurring_next_date" invisible="1" />
                                     <field name="date_start" invisible="1" />
                                     <field name="date_end" />
-                                    <field
-                                        name="last_date_invoiced"
-                                        groups="base.group_no_one"
-                                    />
+                                    <field name="last_date_invoiced" optional="hide" />
                                     <field
                                         name="create_invoice_visibility"
                                         invisible="1"
@@ -254,6 +260,7 @@
                                     <field name="is_cancel_allowed" invisible="1" />
                                     <field name="is_un_cancel_allowed" invisible="1" />
                                     <field name="is_canceled" invisible="1" />
+                                    <field name="company_id" invisible="1" />
                                     <button
                                         name="action_plan_successor"
                                         string="Plan Start"
@@ -320,7 +327,7 @@
                                         groups="analytic.group_analytic_tags"
                                     />
                                     <field name="quantity" />
-                                    <field name="uom_id" />
+                                    <field name="uom_id" groups="uom.group_uom" />
                                     <field
                                         name="automatic_price"
                                         attrs="{'column_invisible': [('parent.contract_type', '=', 'purchase')]}"
@@ -330,7 +337,11 @@
                                         attrs="{'readonly': [('automatic_price', '=', True)]}"
                                     />
                                     <field name="specific_price" invisible="1" />
-                                    <field name="discount" groups="base.group_no_one" />
+                                    <field
+                                        name="discount"
+                                        groups="product.group_discount_per_so_line"
+                                        optional="show"
+                                    />
                                     <field name="price_subtotal" />
                                     <field name="recurring_interval" invisible="1" />
                                     <field name="recurring_rule_type" invisible="1" />
@@ -341,10 +352,7 @@
                                     <field name="date_start" required="1" />
                                     <field name="date_end" />
                                     <field name="recurring_next_date" required="1" />
-                                    <field
-                                        name="last_date_invoiced"
-                                        groups="base.group_no_one"
-                                    />
+                                    <field name="last_date_invoiced" optional="hide" />
                                     <field
                                         name="create_invoice_visibility"
                                         invisible="1"
@@ -362,6 +370,7 @@
                                     <field name="is_un_cancel_allowed" invisible="1" />
                                     <field name="is_auto_renew" invisible="1" />
                                     <field name="is_canceled" invisible="1" />
+                                    <field name="company_id" invisible="1" />
                                     <button
                                         name="action_plan_successor"
                                         string="Plan Start"
@@ -467,6 +476,21 @@
                                     the
                                     invoiced period
                                 </p>
+                                <p colspan="2">
+                                    <strong>#INVOICEMONTHNAME#</strong>
+                                    : Invoice month name
+                                    of
+                                    the
+                                    invoiced period
+                                </p>
+                                <p colspan="2">
+                                    <strong
+                                    >#INVOICEMONTHNUMBER#</strong>: Invoice month number of the period
+                                </p>
+                                <p colspan="2">
+                                    <strong
+                                    >#INVOICEYEAR#</strong>: Invoice year of the period
+                                </p>
                             </group>
                         </page>
                     </notebook>
@@ -531,6 +555,11 @@
                 <field name="code" />
                 <field name="journal_id" groups="account.group_account_user" />
                 <field name="partner_id" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                />
                 <field name="active" invisible="1" />
                 <field name="company_id" groups="base.group_multi_company" />
             </tree>
@@ -667,4 +696,11 @@
         action="action_supplier_contract"
         sequence="99"
     />
+
+    <!-- Base menu for contracts reporting -->
+    <record model="ir.ui.menu" id="menu_contract_reporting">
+        <field name="name">Contracts</field>
+        <field name="parent_id" ref="account.menu_finance_reports" />
+        <field name="sequence" eval="40" />
+    </record>
 </odoo>
